@@ -1,10 +1,10 @@
 # Project status
 
-Last updated: 2026-10-08 — current release **v1.3.0**, published on GitHub (Electron 44.7.0).
-Releases: v1.0.0, v1.1.0, v1.2.0, v1.3.0 — https://github.com/SpeedyDoes/krunker-vibe-client/releases
+Last updated: 2026-10-08 — current release **v1.3.1**, published on GitHub (Electron 44.7.0).
+Releases: v1.0.0, v1.1.0, v1.2.0, v1.3.0, v1.3.1 — https://github.com/SpeedyDoes/krunker-vibe-client/releases
 
 ## Start here (next session)
-- Working tree is clean and pushed; `main` = v1.3.0. Build with `npm install` + `npm run dist`.
+- Working tree is clean and pushed; `main` = v1.3.1. Build with `npm install` + `npm run dist`.
 - Open items waiting on the owner:
   1. Optional: the 3D class preview sits ~57 px lower since Class + Customize left its container — owner
      hasn't said whether to pin it back.
@@ -30,7 +30,7 @@ Releases: v1.0.0, v1.1.0, v1.2.0, v1.3.0 — https://github.com/SpeedyDoes/krunk
 | Plain-Chrome UA (no "discontinued client" popup) | 1.0.0 | `app.userAgentFallback` |
 | Cleaner main menu (promos/streams/nags/push opt-in/guide/popular/footer hidden; compact grouped play buttons) | 1.1.0 | `src/krunker.css` |
 | Signed-in menu cleanup (Battle Pass, Daily Spin, What's New, Turf Wars, Leaderboards hidden; Market & Trading kept — owner's choice) | 1.2.0 | `src/krunker.css` |
-| Signed-in header shows only profile + KR (Junk, ranked points, Wallet hidden); Class + Customize on the left middle; stat line at the bottom edge | 1.3.0 | `src/krunker.css` |
+| Signed-in header shows only profile + KR (Junk, ranked points, Wallet hidden); Class + Customize on the left middle (Customize below the class since 1.3.1); stat line at the bottom edge | 1.3.0 | `src/krunker.css` |
 | Krunker's Frame Cap works (frame-tick animation keeps Chromium ticking; was ~60 fps at a 400 cap) | 1.3.0 | `src/krunker.css` (`kvc-frame-tick`) |
 | Branding: "ViBE CLIENT" banner replacing Krunker's menu logo (`#mainLogo { content: var(--kvc-banner) }`) + version tag, pink→amber Quick Match + hover glow, mark on Krunker's loading screen, window title | 1.2.0 | `src/krunker.css`, `src/assets/banner.svg`, `src/assets/mark.svg`, `main.js` |
 

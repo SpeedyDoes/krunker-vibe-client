@@ -121,6 +121,8 @@ Append a new dated section after each session (newest at the bottom).
 
 ### 3. Release
 - Released **v1.3.0** (menu changes + Frame Cap fix).
+- Owner asked for Customize below the class box: `flex-direction: column` on `#menuClassFooter`
+  (Customize stretches to the class box width; the pair stays centred at half height). Released **v1.3.1**.
 
 ### 2. Menu changes (owner request)
 - Signed-in header: hid Junk (wrench), ranked points (trophy), Wallet and the separators after KR
