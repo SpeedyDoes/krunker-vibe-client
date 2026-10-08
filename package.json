@@ -1,0 +1,30 @@
+{
+  "name": "krunker-vibe-client",
+  "productName": "Krunker Vibe Client",
+  "version": "1.0.0",
+  "description": "Minimal Krunker.io desktop client",
+  "private": true,
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.krunkervibeclient.app",
+    "productName": "Krunker Vibe Client",
+    "icon": "src/assets/icon.png",
+    "files": [
+      "src/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  }
+}
