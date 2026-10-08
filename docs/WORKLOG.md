@@ -93,3 +93,42 @@ Append a new dated section after each session (newest at the bottom).
 ### 6. Tooling / process
 - Discovered `--remote-debugging-port=0` prevents Krunker's menu from rendering → `tools/launch.mjs`
   picks a free fixed port. A reviewer run was interrupted by the usage limit and re-run.
+
+## 2026-10-08 — Session 3
+
+### 1. Freeze while shooting with high polling-rate mice (open)
+- Owner asked for a fix that does not lower FPS (Krunker's own "Aim Freeze Fix" caps at 125 fps).
+- Read Chromium 152's scheduler: left button held + mouse moves → compositor tasks at highest priority;
+  WebSocket/timer tasks normal priority, no anti-starvation, no feature flag to disable it.
+- Built a synthetic harness (described in KRUNKER-NOTES). Found that a `pointerrawupdate` listener (Krunker's
+  "Raw Mouse Input") turns high polling rates into network/timer stalls (32 ms at 4 kHz, up to 5 s at 8 kHz).
+- Redirecting `pointerrawupdate` → `pointermove` fixed it in the harness with no FPS cost, but patching
+  `addEventListener` on dom-ready made Krunker's menu never load (likely anti-tamper). Owner declined the
+  early-injection variant (ban risk) — and turned out to have Raw Mouse Input off anyway. Code reverted.
+- Rejected: per-frame normal-task hop (halves FPS while firing), adaptive hop (~6 % FPS), Worker +
+  SharedArrayBuffer WebSocket relay (process-wide SAB, replaces `window.WebSocket`).
+- Owner's details: other players freeze, only while holding fire, 8000 Hz (fine at 1000 Hz). New lead:
+  `unadjustedMovement` (our `RAW_INPUT`) makes Chromium deliver every raw report; Krunker never requests
+  it, so Chrome uses OS-coalesced mouse moves. Next: owner A/B test without `RAW_INPUT`.
+- Owner then reported it also happens at 500 / 1000 Hz, and that Krunker's Frame Cap at 400 gives ~60 fps.
+  Harness: GPU-bound uncapped frames starve WebSocket/timers even at 1 kHz (up to 214 ms) and even idle.
+  Krunker's Frame Cap skips rAF ticks without drawing → Chromium slows ticks → 400 cap = ~56 fps. A 1px
+  `html::after` compositor opacity animation keeps ticks at full speed: cap exact, and a cap below the
+  GPU-bound maximum removed the starvation (1–3 ms). No effect on uncapped FPS. Switches
+  `disable-main-frame-before-activation` (no effect) and `disable-threaded-compositing` (no rendering)
+  rejected. Read Krunker's "Aim Freeze Fix": alternate frames via a 16 ms setTimeout while firing.
+- Owner tested with `npm start`: Frame Cap works and no freezes, even at 8000 Hz.
+
+### 3. Release
+- Released **v1.3.0** (menu changes + Frame Cap fix).
+
+### 2. Menu changes (owner request)
+- Signed-in header: hid Junk (wrench), ranked points (trophy), Wallet and the separators after KR
+  (selectors from Krunker's header template; verified on an injected replica).
+- Class + Customize (`#menuClassFooter`) moved to the left middle, aligned with the left menu; the class
+  preview stays centred. Position computed through `#menuClassContainer`'s scale with `container-type:
+  size` on `#uiBase` (cqw/cqh); checked at 1920x1080, 1280x720, 2560x1080, 1920x1200.
+- Stat line (`#matchInfoHolder`) moved to the bottom edge. Overrides need `!important` because Krunker's
+  sheet loads after ours.
+- `tools/check.mjs`: signed-in header items in the hidden list; layout checks (footer position, stat line,
+  Customize not covered).

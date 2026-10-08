@@ -34,10 +34,11 @@ npm run dist
 
 ## Notes
 
-- Unlimited FPS (vsync off).
+- Unlimited FPS (vsync off); Krunker's Frame Cap setting works if you want a limit. If other players freeze
+  while you hold fire, set Frame Cap a little below your usual FPS.
 - Raw mouse input in-game (fixes flicks on fast mouse movement; bypasses Windows pointer speed and acceleration).
 - krunker.io links open in a new client window; other links open in the default browser.
 - Built-in ad blocker (blocks ad networks and hides the empty ad boxes; rewarded ads for in-game rewards will not play).
 - Identifies as plain Chrome; Krunker shows a "discontinued client" popup to any Electron user agent.
-- Cleaner main menu (hides promos, streams, sign-up nags, Battle Pass, Daily Spin and other clutter; compact play buttons).
+- Cleaner main menu (hides promos, streams, sign-up nags, Battle Pass, Daily Spin, Junk / ranked points / Wallet and other clutter; compact play buttons; Class and Customize on the left, match info at the bottom).
 - Vibe Client branding: banner replacing the Krunker logo on the menu, version tag, brand-coloured play buttons, loading screen, window title.
