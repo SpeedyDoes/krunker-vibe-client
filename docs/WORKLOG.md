@@ -50,3 +50,46 @@ Append a new dated section after each session (newest at the bottom).
 - Added `CLAUDE.md`, `docs/` (ARCHITECTURE, KRUNKER-NOTES, STATUS, DEVELOPMENT, WORKLOG), `CHANGELOG.md`,
   `tools/` (CDP launch/check/screenshot/dom-dump/net-capture/find-in-scripts, icon rasterizer),
   `.gitattributes`.
+
+## 2026-10-08 — Session 2 (v1.2.0)
+
+### 1. "Still the old Krunker UI" after installing v1.1.0
+- Owner's screenshot showed v1.1.0 *was* applied (compact play buttons, no promo/streams) — but they are
+  **signed in**, and the signed-in menu has its own items (Battle Pass, Daily Spin, What's New, Turf Wars,
+  Market, Leaderboards; header with KR/JNK/RP/Wallet/Inbox) that the signed-out-based CSS never touched.
+- No test account: extracted the signed-in markup from Krunker's Svelte templates in the game script
+  (saved via CDP `Debugger.getScriptSource`, searched by component hash). Owner chose to keep only
+  Market & Trading. Review found the signed-in divider sits *before* `#updateAd` (slot order decoded from
+  the component) → added `#menuItemContainer > .sidebarDivider:has(~ #updateAd)`; signed-in Guide
+  (level ≤ 20) hidden too.
+
+### 2. Branding (owner chose all four options)
+- `src/assets/mark.svg` (logo without tile) passed to the page as a `data:` URI CSS variable plus the
+  version (`--kvc-logo`, `--kvc-version`) — krunker.io has no CSP. Badge under the Krunker logo
+  (`#gameNameHolder::after`, moved 20 px down because Krunker's logo overhangs its holder by ~40 px),
+  pink→amber Quick Match + hover glow, mark on the loading backdrop (`#instructionsFadeBG`, gated on
+  `#loadingBg` still visible), window title fixed to "Krunker Vibe Client".
+
+### 3. Freezes when shooting / seeing an enemy
+- Root cause found via other Krunker clients (Crankshaft force-disables Krunker's `aimFreezeFix`;
+  bigjakk/Electron-Websocket-Fix): `--disable-frame-rate-limit` + held mouse button + movement starves
+  WebSocket dispatch in Chromium's scheduler. I removed the switch (kept `disable-gpu-vsync`) without
+  asking; reviewer reproduced the starvation synthetically (2/5 runs with both switches, 0/3 vsync-off).
+- Owner overruled: uncapped FPS is essential for Krunker, and trade-offs like this must be discussed
+  first. The freeze also cleared on its own (maybe server-side). Restored `disable-frame-rate-limit`
+  before release; options are recorded in KRUNKER-NOTES for if it comes back.
+
+### 4. Vibe Client banner
+- Owner asked to replace Krunker's top-centre logo with our branding. New `src/assets/banner.svg`
+  (blocky "ViBE" in the pink→amber gradient with dark outline + voxel extrusion, crosshair as the dot of
+  the i, "CLIENT" in a framed plate; all paths), injected as `--kvc-banner` and applied with
+  `#mainLogo { content: var(--kvc-banner) }`. The "VIBE CLIENT v…" pill became a small version tag.
+
+### 5. Release
+- Released **v1.2.0** (signed-in cleanup, branding, banner; uncapped FPS unchanged). Installer SHA-256
+  `064a1ebbe065319158e374fd104edf14591915387a8067e2072e6a170b6941d2`. Docs brought up to date for a
+  fresh session (`docs/STATUS.md` → "Start here").
+
+### 6. Tooling / process
+- Discovered `--remote-debugging-port=0` prevents Krunker's menu from rendering → `tools/launch.mjs`
+  picks a free fixed port. A reviewer run was interrupted by the usage limit and re-run.

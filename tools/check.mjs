@@ -24,13 +24,22 @@ line(await c.evaluate(`!Element.prototype.requestPointerLock.toString().includes
 
 // Menu declutter: these must be display:none when present ('n/a' = element absent).
 const hidden = ['#tlInfHold', '#signupRewardsButton', '#signedOutHeaderBar .ph-tooltip', '#menuItemContainer .guideItem',
-  '#subLogoButtons .popRail', '#termsInfo', '.headerBarRight .nav-notif-section'];
+  '#subLogoButtons .popRail', '#termsInfo', '.headerBarRight .nav-notif-section',
+  '#dailySpinDiv', '#updateAd', '#menuItemContainer .bpItem:has(#menuBtnBattlepass)',
+  '#menuItemContainer .menuItem:has(> #menuBtnTurfWars)', '#menuItemContainer .menuItem:has(> #menuBtnLeaderboards)',
+  '#menuItemContainer .menuItem:has(> #menuBtnGuide)'];
 for (const sel of hidden) {
   const d = await c.evaluate(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); return e ? getComputedStyle(e).display : 'n/a'; })()`);
   line(d === 'none' || d === 'n/a', `hidden ${sel}`, d);
 }
 const grid = await c.evaluate(`(() => { const e = document.querySelector('#subLogoButtons'); return e ? getComputedStyle(e).display : 'n/a'; })()`);
 line(grid === 'grid', '#subLogoButtons display grid', grid);
+
+// Branding: Vibe Client banner replaces Krunker's menu logo; version tag under it is never clickable.
+const banner = await c.evaluate(`(() => { const e = document.getElementById('mainLogo'); return e ? getComputedStyle(e).content : 'n/a'; })()`);
+line(banner === 'n/a' || banner.includes('data:image/svg+xml'), '#mainLogo shows the Vibe banner', banner.slice(0, 40));
+const badge = await c.evaluate(`(() => { const e = document.getElementById('gameNameHolder'); if (!e) return 'n/a'; const s = getComputedStyle(e, '::after'); return s.content.startsWith('"v') ? s.pointerEvents : 'missing'; })()`);
+line(badge === 'none' || badge === 'n/a', 'menu version tag present, pointer-events none', badge);
 
 const act = await c.evaluate(`(() => { try { const a = getGameActivity(); if (a) delete a.user; return JSON.stringify(a); } catch (e) { return 'error: ' + e.message; } })()`);
 line(typeof act === 'string' && act.startsWith('{'), 'getGameActivity()', act);

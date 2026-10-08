@@ -39,7 +39,8 @@ never click Krunker's consent dialog or automate matches.
 - **Ad blocking**: `node tools/net-capture.mjs <port> 40` lists hosts and `BLOCKED(n)` marks. Add hosts to
   `AD_HOSTS` only when they are ad-serving; record legit hosts in KRUNKER-NOTES.
 - **Logo change**: edit `src/assets/logo.svg`, then `npm i --no-save @resvg/resvg-js` and
-  `node tools/rasterize-icon.mjs` to regenerate `src/assets/icon.png`.
+  `node tools/rasterize-icon.mjs` to regenerate `src/assets/icon.png`. `mark.svg` (tile-less mark) and
+  `banner.svg` (menu banner, lettering as paths) are hand-made derivatives — update them by hand.
 - **Discord presence**: set `DISCORD_CLIENT_ID` in `src/main.js` (see `docs/STATUS.md` for the remaining
   steps).
 

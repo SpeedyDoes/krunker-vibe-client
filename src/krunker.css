@@ -67,3 +67,78 @@
   text-align: center;
   white-space: normal;
 }
+
+/* Signed-in left menu: Battle Pass, Daily Spin, What's New (beats Krunker's inline display), Turf Wars,
+   Leaderboards and the plain Guide item (signed in, level <= 20), plus the dividers they leave dangling:
+   the one after What's New (signed out / level <= 20) and the signed-in one before it. Market & Trading stays. */
+#menuItemContainer .bpItem:has(#menuBtnBattlepass),
+#dailySpinDiv,
+#updateAd,
+#menuItemContainer .menuItem:has(> #menuBtnTurfWars),
+#menuItemContainer .menuItem:has(> #menuBtnLeaderboards),
+#menuItemContainer .menuItem:has(> #menuBtnGuide),
+#updateAd + .sidebarDivider,
+#menuItemContainer > .sidebarDivider:has(~ #updateAd) { display: none !important; }
+
+/* Branding: Vibe Client banner in place of Krunker's menu logo (same box, so its layout stays), plus a small
+   version tag under it. Not clickable, not in game. */
+#mainLogo {
+  content: var(--kvc-banner);
+  object-fit: contain;
+}
+#gameNameHolder::after {
+  content: var(--kvc-version);
+  position: absolute;
+  left: 50%;
+  /* Krunker's logo image overhangs #gameNameHolder by ~40 px (negative margin-bottom). */
+  top: calc(100% + 38px);
+  transform: translateX(-50%);
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.6);
+  text-shadow: 0 1px 2px #000;
+  pointer-events: none;
+}
+
+/* Accent colours: pink to amber instead of Krunker's purple on Quick Match; brand glow on hover. */
+#subLogoButtons > .actionCard { transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s; }
+#subLogoButtons > .actionCard:hover {
+  border-color: #ffb02e;
+  box-shadow: 0 0 14px rgba(255, 61, 127, 0.55);
+}
+#subLogoButtons > #menuBtnQuickMatch {
+  border-image: linear-gradient(90deg, #ff3d7f, #ffb02e) 1;
+  background: linear-gradient(90deg, rgba(255, 61, 127, 0.34) 0%, rgba(255, 176, 46, 0.16) 45%, rgba(0, 0, 0, 0.55) 90%);
+}
+#subLogoButtons > #menuBtnQuickMatch:hover {
+  background: linear-gradient(90deg, rgba(255, 61, 127, 0.46) 0%, rgba(255, 176, 46, 0.26) 45%, rgba(0, 0, 0, 0.7) 90%);
+}
+
+/* Loading screen: mark and name below Krunker's spinner, only until its loading backdrop is dismissed (the backdrop itself fades out after). */
+body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::before,
+body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::after {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::before {
+  content: "";
+  top: calc(50% + 10px);
+  width: 72px;
+  height: 72px;
+  background: var(--kvc-logo) no-repeat center / contain;
+}
+body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::after {
+  content: "VIBE CLIENT";
+  top: calc(50% + 94px);
+  font-size: 22px;
+  letter-spacing: 5px;
+  white-space: nowrap;
+  color: transparent;
+  background: linear-gradient(90deg, #ff3d7f, #ffb02e);
+  background-clip: text;
+  -webkit-background-clip: text;
+}

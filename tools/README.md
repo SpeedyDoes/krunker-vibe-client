@@ -33,7 +33,8 @@ after 3 minutes; the auto-created profile is deleted when the launcher exits.
 
 `node tools/check.mjs <port>` prints PASS/FAIL for: menu loaded, no "Electron" in the UA, no
 "discontinuing this version" popup, hidden ad wrappers, `adsbygoogle` undefined, raw-input patch,
-menu declutter (`n/a` when an element is absent or not rendered yet), `#subLogoButtons` grid, and
+menu declutter (`n/a` when an element is absent or not rendered yet), `#subLogoButtons` grid, the
+banner (`#mainLogo` replaced) and version tag (`pointer-events: none`), and
 `getGameActivity()` (without `user`).
 Exits 1 on any FAIL.
 

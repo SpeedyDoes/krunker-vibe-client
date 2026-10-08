@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720 360">
+  <defs>
+    <linearGradient id="f" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="538" y2="0">
+      <stop offset="0" stop-color="#ff3d7f"/>
+      <stop offset="1" stop-color="#ffb02e"/>
+    </linearGradient>
+    <linearGradient id="c" gradientUnits="userSpaceOnUse" x1="217" y1="0" x2="503" y2="0">
+      <stop offset="0" stop-color="#ff3d7f"/>
+      <stop offset="1" stop-color="#ffb02e"/>
+    </linearGradient>
+    <g id="w">
+      <path d="M0 0H52L80 112L108 0H160L106 180H54Z"/>
+      <path d="M190 70H238V180H190Z"/>
+      <path fill-rule="evenodd" d="M272 0H372L402 30V70L384 90L402 110V150L372 180H272ZM320 38V70H348V38ZM320 110V142H350V110Z"/>
+      <path d="M426 0H538V40H474V70H526V110H474V140H538V180H426Z"/>
+      <path fill-rule="evenodd" d="M194 26a20 20 0 1 0 40 0a20 20 0 1 0-40 0ZM205 26a9 9 0 1 0 18 0a9 9 0 1 0-18 0ZM208-8h12V4h-12ZM208 48h12V60h-12ZM176 20h16V32h-16ZM236 20h16V32h-16Z"/>
+    </g>
+    <linearGradient id="t" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="286" y2="0">
+      <stop offset="0" stop-color="#ff3d7f"/>
+      <stop offset="1" stop-color="#ffb02e"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(56 26) scale(1.1)" stroke-linejoin="miter">
+    <g fill="#111118" stroke="#111118" stroke-width="26">
+      <use xlink:href="#w" transform="translate(6 6)"/><use xlink:href="#w" transform="translate(12 12)"/><use xlink:href="#w" transform="translate(18 18)"/>
+    </g>
+    <path d="M246 56H266V84H246Z" fill="#111118"/>
+    <g fill="#a3224f" stroke="#a3224f" stroke-width="18">
+      <use xlink:href="#w" transform="translate(6 6)"/><use xlink:href="#w" transform="translate(12 12)"/><use xlink:href="#w" transform="translate(18 18)"/>
+    </g>
+    <use xlink:href="#w" fill="#111118" stroke="#111118" stroke-width="18"/>
+    <use xlink:href="#w" fill="url(#f)" stroke="none"/>
+  </g>
+  <rect x="196" y="274" width="346" height="76" fill="#a3224f" stroke="#111118" stroke-width="6"/>
+  <rect x="184" y="262" width="352" height="80" fill="#111118"/>
+  <rect x="190" y="268" width="340" height="68" fill="#111118" stroke="url(#c)" stroke-width="6"/>
+  <g transform="translate(217 280)">
+    <path fill="none" stroke="url(#t)" stroke-width="11" d="M36 5.5H5.5V38.5H36M55.5 0V38.5H86M118 0V44M186 5.5H155.5V38.5H186M155.5 22H180M250 5.5H286M268 5.5V44"/>
+    <path fill="url(#t)" d="M200 0H211L225 23V0H236V44H225L211 21V44H200Z"/>
+  </g>
+</svg>
