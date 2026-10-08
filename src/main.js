@@ -15,8 +15,11 @@ const AD_HOSTS = ['doubleclick.net', 'googlesyndication.com', 'googleadservices.
   'googletagservices.com', 'adservice.google.com', 'fundingchoicesmessages.google.com',
   'imasdk.googleapis.com', 'amazon-adsystem.com'];
 
-// Menu declutter and the hidden ad boxes (Krunker's dark frames around the now empty ad slots).
-const KRUNKER_CSS = fs.readFileSync(path.join(__dirname, 'krunker.css'), 'utf8');
+// Menu declutter, hidden ad boxes and client branding. The page can't load local files, so the
+// logo mark, menu banner and version reach the stylesheet as CSS variables.
+const svgUri = (name) => `data:image/svg+xml;base64,${fs.readFileSync(path.join(__dirname, 'assets', name)).toString('base64')}`;
+const KRUNKER_CSS = `:root { --kvc-logo: url("${svgUri('mark.svg')}"); --kvc-banner: url("${svgUri('banner.svg')}"); --kvc-version: "v${app.getVersion()}"; }\n`
+  + fs.readFileSync(path.join(__dirname, 'krunker.css'), 'utf8');
 
 // Chromium's default pointer lock re-centres the OS cursor; fast mouse movement outruns it
 // and produces random camera flicks. Raw input (unadjustedMovement) reads the mouse directly.
@@ -57,7 +60,8 @@ const READ_ACTIVITY = `(() => {
 // shows a "discontinued client" popup, so drop the app and Electron tokens (plain Chrome UA).
 app.userAgentFallback = app.userAgentFallback.replace(/ \S+\/\S+ (Chrome\/\S+) Electron\/\S+/, ' $1');
 
-// Unlimited FPS
+// Unlimited FPS (owner's requirement). Known Chromium side effect under heavy load: held fire + mouse
+// movement can delay WebSocket messages — see docs/KRUNKER-NOTES.md before changing this.
 app.commandLine.appendSwitch('disable-frame-rate-limit');
 app.commandLine.appendSwitch('disable-gpu-vsync');
 
@@ -202,10 +206,13 @@ app.whenReady().then(() => {
     height: 720,
     fullscreen: true,
     show: false,
+    title: 'Krunker Vibe Client',
     backgroundColor: '#000000',
     icon: ICON,
     webPreferences: { spellcheck: false }
   });
+  // Keep the client's name in the taskbar instead of Krunker's page title.
+  mainWindow.on('page-title-updated', (event) => event.preventDefault());
 
   // Also called on a failed load so an offline start never leaves the user stuck on the splash.
   const showMain = () => {

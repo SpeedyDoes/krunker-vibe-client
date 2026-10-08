@@ -39,4 +39,5 @@ npm run dist
 - krunker.io links open in a new client window; other links open in the default browser.
 - Built-in ad blocker (blocks ad networks and hides the empty ad boxes; rewarded ads for in-game rewards will not play).
 - Identifies as plain Chrome; Krunker shows a "discontinued client" popup to any Electron user agent.
-- Cleaner main menu (hides promos, streams, sign-up nags and other clutter; compact play buttons).
+- Cleaner main menu (hides promos, streams, sign-up nags, Battle Pass, Daily Spin and other clutter; compact play buttons).
+- Vibe Client branding: banner replacing the Krunker logo on the menu, version tag, brand-coloured play buttons, loading screen, window title.

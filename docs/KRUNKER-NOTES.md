@@ -33,8 +33,23 @@ fact was last confirmed. Krunker web build seen: app_version 7.2.5 (Oct 2026).
 | Footer links | `#termsInfo` (Contact / Terms / Changelog) | |
 | Class + Customize | `#menuClassContainer`, `#menuClassName`, `#menuClassIcn`, `#customizeButton` | |
 | Ad slots | `#aHolder > #aMerger > #aContainer > #krunker-io_728x90`; end screen `.endAHolder > #endAContainer` (id used twice) | `#aContainer` has `display:inline-block!important`, translucent bg, min-height → hide with `visibility` |
-- Signed-in header has not been inspected (no test account) — `#signedOutHeaderBar` rules simply don't
-  match there.
+| Menu logo | `#gameNameHolder` (absolute, ~365x170, hidden by Krunker in game) > `img#mainLogo` (`height:200px; margin-top:10px; margin-bottom:-40px` → overhangs the holder by ~40 px) | since v1.2.0 swapped for our banner with `#mainLogo { content: var(--kvc-banner) }` — Chromium renders `content: url()` on an `<img>` instead of its `src` in the same box, so Krunker's seasonal logo changes don't matter; it also overrides resource-pack logos (`textures/logo.png` → `mainLogo.src`) |
+
+### Signed-in menu (from Krunker's Svelte templates in the game script, Oct 2026)
+No test account exists, so these come from the template strings (extract them by saving the game script
+via CDP `Debugger.getScriptSource` and searching for the component's `svelte-xxxx` hash) and from the
+owner's screenshot.
+| Element | Markup |
+|---|---|
+| Left menu template | `#menuItemContainer`: `<!> <!> <!> <!> <div id="updateAd" style="display:none">…</div> <!>×7 <div class="sidebarDivider"></div> <!>×3`. Slots before `#updateAd`: Battle Pass (signed in), Daily Spin (signed in), a `.sidebarDivider` (signed in), Guide; first slot after it: a divider shown signed out or at level ≤ 20 |
+| Battle Pass | `.menuItem.bpItem` > `img.bpLogo` + `.bpInfo` > `#menuBtnBattlepass` (+ `.bpBar`, `.bpComplete`) — signed out, Guide is also `.bpItem` (`.guideItem`); signed in (level ≤ 20 only) it is a plain `.menuItem > #menuBtnGuide` |
+| Daily Spin | `#dailySpinDiv.menuItem.dsItem` (`.dsLogo`, `.dsInfo`, `.dsTooltip`, `.dsClaim`, `.dsDone`) |
+| What's New | `#updateAd` (inline `display` toggled by Krunker), `#updateAdVersion` |
+| Generic items | `.menuItem` > `.menuItemTitle#menuBtnX` (direct child): `menuBtnTurfWars`, `menuBtnMarket`, `menuBtnSkinManager`, `menuBtnLeaderboards`, … — hide with `.menuItem:has(> #menuBtnX)` |
+| Header | `#signedInHeaderBar` > `.ph-item`s: avatar/name/level (`.ph-avatar`, `.ph-name`, `.ph-level-badge`), KR `#menuKRCount`, JNK `#menuJNKCount`, ranked points `#menuRPCount`, Wallet; right side adds Inbox (`.nav-item` with `#mailCount`) |
+| Loading screen | `#loadingBg` (empty, under overlays; gets inline `display:none` ≈ 6.5 s), spinner; `#instructionsFadeBG` is the visible backdrop that fades out |
+- The owner (signed in) keeps Market & Trading; Battle Pass, Daily Spin, What's New, Turf Wars and
+  Leaderboards are hidden since v1.2.0.
 
 ## Game data (for Discord presence or overlays)
 - `window.getGameActivity()` → `{ id: 'FRA:hk08a', time: 188, user: 'Guest', class: { name: 'Triggerman',
@@ -67,6 +82,32 @@ fact was last confirmed. Krunker web build seen: app_version 7.2.5 (Oct 2026).
   `window.utilities` exists (old idkr client).
 - Fix: remove `Electron/x` (and the app token) from `app.userAgentFallback`. Found with
   `tools/find-in-scripts.mjs <port> "We\x20are\x20discontinuing"` then reading the caller.
+
+## Freezes while shooting ("aim freeze") — known side effect of uncapped FPS
+- **Uncapped FPS (`disable-frame-rate-limit`) is an owner requirement — keep it.** Don't remove or cap it
+  as a fix; discuss options with the owner first.
+- Report (owner, v1.1.0 at ~1000 FPS): the game froze for a moment when they started shooting / met an
+  enemy; not a frame-rate drop. It went away on its own later (possibly server-side), so it is not
+  confirmed that this client hit the Chromium issue below.
+- Cause (documented by github.com/bigjakk/Electron-Websocket-Fix, Chromium ≥ 84): with
+  `--disable-frame-rate-limit`, holding left click + moving the mouse makes Blink run input at highest
+  priority and boosts the compositor; `BackToBackBeginFrameSource` posts zero-delay BeginMainFrame tasks,
+  so normal-priority WebSocket/Worker messages starve for 100–300 ms+ → positions freeze, hits don't
+  register. Other clients fight the same issue (Crankshaft force-disables Krunker's own
+  `kro_setngss_aimFreezeFix` setting; Kute ships a patched libcef).
+- Reproduced synthetically (Electron 44, local page + WebSocket pushing every 5 ms + heavy WebGL frames
+  ≈ 410 fps + CDP held mouse moves): with both switches 2 of 5 runs starved (WebSocket delay p50 ≈ 2 s,
+  gaps up to 670 ms); with `disable-gpu-vsync` only 0 of 3 (max 7 ms). At a lighter load (~1000 fps) it
+  did not reproduce.
+- Options if real freezes come back (owner decides): (1) a patched Electron build from
+  bigjakk/Electron-Websocket-Fix (keeps uncapped FPS; third-party binaries, ships as `electronDist`),
+  (2) try Krunker's own "Aim Freeze Fix" setting, (3) cap FPS (v1.2.0 dev build briefly dropped
+  `disable-frame-rate-limit` — vsync-off alone paces at display refresh, 120 fps here — reverted at the
+  owner's request before release).
+- Krunker's own Experimental settings (Settings → Experimental): `rawMouse` "Raw Mouse Input" (switches
+  the game to `pointerrawupdate` + coalesced events = full mouse polling rate on the main thread),
+  `aimFreezeFix` "Aim Freeze Fix" ("Possible fix for jittery/freezing aiming"), `flickClamp`
+  "Mouse Flick Fix" (default 200), `mouseAccel`. Settings persist in localStorage as `kro_setngss_<key>`.
 
 ## Input
 - Mouse flicks on fast movement: Chromium's default pointer lock re-centres the OS cursor; fast moves
@@ -103,6 +144,9 @@ fact was last confirmed. Krunker web build seen: app_version 7.2.5 (Oct 2026).
   Developer Portal; only its public Application ID goes in `DISCORD_CLIENT_ID`.
 
 ## Tooling gotchas
+- Many test launches in a short time trigger Krunker's Cloudflare "Verify you are human" challenge
+  (and once "Connection limited"); it clears on its own. Don't click it from automation — pause testing.
+- An SVG used as an image (data URI in CSS) can't load fonts — draw all lettering as paths.
 - With `--remote-debugging-port=0` (Chromium picks the port) Krunker's menu **never renders**
   (`getGameActivity` exists but `#menuItemContainer` doesn't appear, reproduced twice); a fixed port
   works. Cause not investigated — `tools/launch.mjs` picks a free fixed port instead.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0 — 2026-10-08
+- Cleaner signed-in menu: hides Battle Pass, Daily Spin, What's New, Turf Wars, Leaderboards and the
+  Guide entry plus leftover dividers (Market & Trading stays).
+- Vibe Client branding: "ViBE CLIENT" banner replacing the Krunker logo on the menu (with a small version
+  tag), pink→amber Quick Match and play-button hover glow, logo on Krunker's loading screen, window
+  title "Krunker Vibe Client".
+
 ## 1.1.0 — 2026-10-08
 - Cleaner main menu: hides the store bundle promo, Live Streams panel, "Get Signup Rewards" and
   "Register now" nags, the web-push "Notifications" button (can't work in a desktop client), the

@@ -1,12 +1,23 @@
 # Project status
 
-Last updated: 2026-10-08 — current release **v1.1.0** (Electron 44.7.0).
+Last updated: 2026-10-08 — current release **v1.2.0**, published on GitHub (Electron 44.7.0).
+Releases: v1.0.0, v1.1.0, v1.2.0 — https://github.com/SpeedyDoes/krunker-vibe-client/releases
+
+## Start here (next session)
+- Working tree is clean and pushed; `main` = v1.2.0. Build with `npm install` + `npm run dist`.
+- Open items waiting on the owner:
+  1. Confirm the v1.2.0 signed-in menu and banner look right in their real (logged-in) client — the
+     signed-in rules were only verified on template replicas.
+  2. Discord Rich Presence: dormant until the owner sends a Discord Application ID (see below).
+  3. LICENSE choice (none yet → all rights reserved).
+- Watch item: freezes while shooting — owner keeps uncapped FPS; options in KRUNKER-NOTES if it recurs.
+- Remember: discuss any fix that costs the owner something (FPS, features) before doing it.
 
 ## Shipped
 | Feature | Since | Where |
 |---|---|---|
 | Electron shell loading krunker.io, fullscreen start, secure defaults, no preload | 1.0.0 | `src/main.js` |
-| Unlimited FPS (`disable-frame-rate-limit`, `disable-gpu-vsync`) | 1.0.0 | `src/main.js` |
+| Unlimited FPS (`disable-frame-rate-limit`, `disable-gpu-vsync`) — owner requirement, keep | 1.0.0 | `src/main.js` |
 | No app menu (no Ctrl+W/Ctrl+R/zoom accelerators) | 1.0.0 | `src/main.js` |
 | Keybinds F5 reload, F6 new game (main window), F11 fullscreen, F12 DevTools | 1.0.0 | `setupWindow` |
 | Link routing: krunker.io + scripted popups in client windows, other links in default browser | 1.0.0 | `setupWindow` |
@@ -16,6 +27,8 @@ Last updated: 2026-10-08 — current release **v1.1.0** (Electron 44.7.0).
 | Ad blocker (network) + hidden empty ad frames | 1.0.0 | `AD_HOSTS`, `src/krunker.css` |
 | Plain-Chrome UA (no "discontinued client" popup) | 1.0.0 | `app.userAgentFallback` |
 | Cleaner main menu (promos/streams/nags/push opt-in/guide/popular/footer hidden; compact grouped play buttons) | 1.1.0 | `src/krunker.css` |
+| Signed-in menu cleanup (Battle Pass, Daily Spin, What's New, Turf Wars, Leaderboards hidden; Market & Trading kept — owner's choice) | 1.2.0 | `src/krunker.css` |
+| Branding: "ViBE CLIENT" banner replacing Krunker's menu logo (`#mainLogo { content: var(--kvc-banner) }`) + version tag, pink→amber Quick Match + hover glow, mark on Krunker's loading screen, window title | 1.2.0 | `src/krunker.css`, `src/assets/banner.svg`, `src/assets/mark.svg`, `main.js` |
 
 ## In progress / dormant
 - **Discord Rich Presence** — implemented and reviewed (`src/discord.js`, `publishPresence` /
@@ -34,10 +47,12 @@ Last updated: 2026-10-08 — current release **v1.1.0** (Electron 44.7.0).
 ## Known limitations
 - Installer is not code-signed → SmartScreen "Windows protected your PC" (More info → Run anyway).
 - Rewarded-ad offers (free KR/spins for watching ads) can't play because of the ad blocker.
-- Menu CSS was designed on the **signed-out** menu at 1920x1080 (also checked 1280x720, 2560x1440);
-  the signed-in header hasn't been inspected.
-- A faint orphan `.sidebarDivider` remains above "Store" after hiding Guide (removing it reliably would
-  depend on Krunker's inline styles).
+- Menu CSS was designed on the **signed-out** menu at 1920x1080 (also checked 1280x720, 2560x1440).
+  Signed-in rules were verified only on replicas of Krunker's templates (no test account) — the owner's
+  real signed-in menu is the final check.
+- Known Chromium side effect of uncapped FPS: under heavy load, holding fire while moving the mouse can
+  delay WebSocket messages (reproduced synthetically; see KRUNKER-NOTES). The owner keeps uncapped FPS —
+  if in-game freezes come back, discuss the options in KRUNKER-NOTES with the owner before changing anything.
 - Raw input bypasses Windows pointer speed / acceleration (in-game sensitivity may need adjusting).
 - Krunker updates can rename ids/classes; broken selectors fail silently (element just reappears).
 - No auto-update: users install new releases manually (the installer updates in place, keeps login).

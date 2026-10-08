@@ -4,7 +4,8 @@ Minimal Electron desktop client for https://krunker.io. Public repo:
 https://github.com/SpeedyDoes/krunker-vibe-client (releases ship a Windows NSIS installer).
 
 Read before working:
-- `docs/STATUS.md` — what works, what is unfinished, known limitations, backlog.
+- `docs/STATUS.md` — **start with its "Start here" section** (open items waiting on the owner), then
+  what works, what is unfinished, known limitations, backlog.
 - `docs/ARCHITECTURE.md` — how the code is put together (main process only: `main.js` + `discord.js`, no preload).
 - `docs/KRUNKER-NOTES.md` — hard-won facts about Krunker's page and Electron gotchas. Check here
   before investigating anything about Krunker's DOM, ads, popups, game data or input.
@@ -17,6 +18,8 @@ Read before working:
   The app has **no runtime dependencies** and only `electron` + `electron-builder` as dev dependencies.
 - Plain CommonJS JavaScript in `src/`, no build step, no TypeScript, no bundler, no preload script.
   Style: 2-space indent, single quotes, semicolons, short comments only for non-obvious "why".
+- Never trade away something the owner values (performance, features, behaviour) as part of a fix
+  without asking first. **Uncapped FPS is a hard requirement.**
 - Stay inside this project folder; never touch sibling projects.
 - Workflow the owner asked for on larger tasks: write a plan first, implement with Sonnet subagents,
   then have Opus reviewer subagents check the code against the plan, then finalize. Small fixes can be
