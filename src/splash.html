@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'unsafe-inline'">
+<title>Krunker Vibe Client</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #111118;
+    color: #f2f2f5;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+    user-select: none;
+    cursor: default;
+  }
+  img { width: 88px; height: 88px; }
+  h1 { margin: 18px 0 26px; font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
+  .bar { width: 160px; height: 4px; border-radius: 2px; background: #ffffff14; overflow: hidden; }
+  .bar::before {
+    content: '';
+    display: block;
+    width: 40%;
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #ff3d7f, #ffb02e);
+    animation: slide 1.2s ease-in-out infinite;
+  }
+  @keyframes slide {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(250%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bar::before { animation-duration: 4s; }
+  }
+</style>
+</head>
+<body>
+  <img src="assets/logo.svg" alt="">
+  <h1>Krunker Vibe Client</h1>
+  <div class="bar"></div>
+</body>
+</html>
