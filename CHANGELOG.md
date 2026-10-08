@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.1 — 2026-10-08
+- Customize button sits below the class box.
+
 ## 1.3.0 — 2026-10-08
 - Signed-in header shows only your profile and KR (Junk, ranked points and Wallet hidden).
 - Class and Customize buttons moved to the left middle of the menu; the "Now Playing" stat line moved to

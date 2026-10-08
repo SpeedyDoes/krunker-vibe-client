@@ -150,7 +150,7 @@ body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::after {
 #signedInHeaderBar > .ph-item:has(> .ph-label),
 #signedInHeaderBar > .ph-item:has(#menuKRCount) ~ .verticalSeparator { display: none !important; }
 
-/* Class + Customize on the left middle (the class preview stays centred). #menuClassContainer is centred at
+/* Class + Customize on the left middle, Customize below the class (the class preview stays centred). #menuClassContainer is centred at
    left 50% / bottom 200px and scaled 0.8 from its bottom centre, so the screen position is converted into its
    local space with #uiBase's size (container query units): left edge at 20px, centre at half height. !important
    because Krunker's own rules load after ours. */
@@ -161,6 +161,7 @@ body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::after {
   bottom: calc(62.5cqh - 250px) !important;
   transform: translateY(50%) !important;
   margin: 0 !important;
+  flex-direction: column !important;
 }
 
 /* Stat line (Now Playing, region, Invite/Join, FPS, ping): at the bottom edge instead of under the class. */
