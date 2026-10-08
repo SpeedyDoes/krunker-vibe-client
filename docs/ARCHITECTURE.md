@@ -9,7 +9,7 @@ the main process with `webContents.insertCSS` / `executeJavaScript` on `dom-read
 | File | Role |
 |---|---|
 | `src/main.js` | The whole app: switches, UA fix, ad blocker, windows, keybinds, page tweaks, presence wiring. |
-| `src/krunker.css` | CSS inserted into krunker.io pages: menu declutter (signed-out + signed-in), hidden ad wrappers, branding (banner replacing `#mainLogo`, version tag, accents, loading screen). |
+| `src/krunker.css` | CSS inserted into krunker.io pages: menu declutter (signed-out + signed-in, incl. header currencies), menu layout (Class + Customize on the left middle via container query units on `#uiBase`, stat line at the bottom), hidden ad wrappers, a 1px `html::after` compositor animation that keeps Chromium's frame ticks at full speed (so Krunker's Frame Cap works), branding (banner replacing `#mainLogo`, version tag, accents, loading screen). Krunker's own sheet applies after ours, so overrides of its rules use `!important`. |
 | `src/discord.js` | Dependency-free Discord IPC client (Rich Presence). Dormant until `DISCORD_CLIENT_ID` is set. |
 | `src/splash.html` | Static splash page (no JS, strict CSP) shown while Krunker loads. |
 | `src/assets/logo.svg` | Logo source of truth (original artwork). |

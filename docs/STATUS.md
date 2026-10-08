@@ -1,16 +1,18 @@
 # Project status
 
-Last updated: 2026-10-08 — current release **v1.2.0**, published on GitHub (Electron 44.7.0).
-Releases: v1.0.0, v1.1.0, v1.2.0 — https://github.com/SpeedyDoes/krunker-vibe-client/releases
+Last updated: 2026-10-08 — current release **v1.3.0**, published on GitHub (Electron 44.7.0).
+Releases: v1.0.0, v1.1.0, v1.2.0, v1.3.0 — https://github.com/SpeedyDoes/krunker-vibe-client/releases
 
 ## Start here (next session)
-- Working tree is clean and pushed; `main` = v1.2.0. Build with `npm install` + `npm run dist`.
+- Working tree is clean and pushed; `main` = v1.3.0. Build with `npm install` + `npm run dist`.
 - Open items waiting on the owner:
-  1. Confirm the v1.2.0 signed-in menu and banner look right in their real (logged-in) client — the
-     signed-in rules were only verified on template replicas.
+  1. Optional: the 3D class preview sits ~57 px lower since Class + Customize left its container — owner
+     hasn't said whether to pin it back.
   2. Discord Rich Presence: dormant until the owner sends a Discord Application ID (see below).
   3. LICENSE choice (none yet → all rights reserved).
-- Watch item: freezes while shooting — owner keeps uncapped FPS; options in KRUNKER-NOTES if it recurs.
+- Freeze while shooting: **solved for the owner** (v1.3.0, confirmed at 8000 Hz) by Krunker's Frame Cap set a
+  little below their usual FPS, which works since the frame-tick fix. Uncapped stays the client default;
+  see KRUNKER-NOTES "Freezes" if it comes back.
 - Remember: discuss any fix that costs the owner something (FPS, features) before doing it.
 
 ## Shipped
@@ -28,6 +30,8 @@ Releases: v1.0.0, v1.1.0, v1.2.0 — https://github.com/SpeedyDoes/krunker-vibe-
 | Plain-Chrome UA (no "discontinued client" popup) | 1.0.0 | `app.userAgentFallback` |
 | Cleaner main menu (promos/streams/nags/push opt-in/guide/popular/footer hidden; compact grouped play buttons) | 1.1.0 | `src/krunker.css` |
 | Signed-in menu cleanup (Battle Pass, Daily Spin, What's New, Turf Wars, Leaderboards hidden; Market & Trading kept — owner's choice) | 1.2.0 | `src/krunker.css` |
+| Signed-in header shows only profile + KR (Junk, ranked points, Wallet hidden); Class + Customize on the left middle; stat line at the bottom edge | 1.3.0 | `src/krunker.css` |
+| Krunker's Frame Cap works (frame-tick animation keeps Chromium ticking; was ~60 fps at a 400 cap) | 1.3.0 | `src/krunker.css` (`kvc-frame-tick`) |
 | Branding: "ViBE CLIENT" banner replacing Krunker's menu logo (`#mainLogo { content: var(--kvc-banner) }`) + version tag, pink→amber Quick Match + hover glow, mark on Krunker's loading screen, window title | 1.2.0 | `src/krunker.css`, `src/assets/banner.svg`, `src/assets/mark.svg`, `main.js` |
 
 ## In progress / dormant
@@ -50,9 +54,10 @@ Releases: v1.0.0, v1.1.0, v1.2.0 — https://github.com/SpeedyDoes/krunker-vibe-
 - Menu CSS was designed on the **signed-out** menu at 1920x1080 (also checked 1280x720, 2560x1440).
   Signed-in rules were verified only on replicas of Krunker's templates (no test account) — the owner's
   real signed-in menu is the final check.
-- Known Chromium side effect of uncapped FPS: under heavy load, holding fire while moving the mouse can
-  delay WebSocket messages (reproduced synthetically; see KRUNKER-NOTES). The owner keeps uncapped FPS —
-  if in-game freezes come back, discuss the options in KRUNKER-NOTES with the owner before changing anything.
+- Chromium side effect of uncapped FPS: holding fire while moving the mouse can delay WebSocket messages
+  (other players freeze) when rendering is saturated. Worse with high polling-rate mice and with Krunker's
+  Raw Mouse Input. Workaround that keeps FPS high: Frame Cap a little below the usual FPS — see KRUNKER-NOTES; never cap FPS or patch Krunker's event APIs without the owner's go-ahead (patching
+  `addEventListener` breaks Krunker's load and risks anti-cheat).
 - Raw input bypasses Windows pointer speed / acceleration (in-game sensitivity may need adjusting).
 - Krunker updates can rename ids/classes; broken selectors fail silently (element just reappears).
 - No auto-update: users install new releases manually (the installer updates in place, keeps login).

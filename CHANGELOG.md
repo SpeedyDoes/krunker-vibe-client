@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0 — 2026-10-08
+- Signed-in header shows only your profile and KR (Junk, ranked points and Wallet hidden).
+- Class and Customize buttons moved to the left middle of the menu; the "Now Playing" stat line moved to
+  the bottom edge.
+- Fix: Krunker's Frame Cap setting now gives the chosen FPS (a 400 cap used to drop to about 60 FPS).
+
 ## 1.2.0 — 2026-10-08
 - Cleaner signed-in menu: hides Battle Pass, Daily Spin, What's New, Turf Wars, Leaderboards and the
   Guide entry plus leftover dividers (Market & Trading stays).

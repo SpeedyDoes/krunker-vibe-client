@@ -142,3 +142,41 @@ body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::after {
   background-clip: text;
   -webkit-background-clip: text;
 }
+
+/* Signed-in header: keep the profile and KR; hide Junk (wrench), ranked points (trophy), Wallet and the
+   separators after KR. */
+#signedInHeaderBar > .ph-item:has(#menuJNKCount),
+#signedInHeaderBar > .ph-item:has(#menuRPCount),
+#signedInHeaderBar > .ph-item:has(> .ph-label),
+#signedInHeaderBar > .ph-item:has(#menuKRCount) ~ .verticalSeparator { display: none !important; }
+
+/* Class + Customize on the left middle (the class preview stays centred). #menuClassContainer is centred at
+   left 50% / bottom 200px and scaled 0.8 from its bottom centre, so the screen position is converted into its
+   local space with #uiBase's size (container query units): left edge at 20px, centre at half height. !important
+   because Krunker's own rules load after ours. */
+#uiBase { container-type: size; }
+#menuClassFooter {
+  position: absolute !important;
+  left: calc(400px - 62.5cqw) !important;
+  bottom: calc(62.5cqh - 250px) !important;
+  transform: translateY(50%) !important;
+  margin: 0 !important;
+}
+
+/* Stat line (Now Playing, region, Invite/Join, FPS, ping): at the bottom edge instead of under the class. */
+#matchInfoHolder { bottom: 12px !important; }
+
+/* Krunker's Frame Cap skips animation frames without drawing; Chromium then slows its frame ticks and a
+   400 cap renders ~60 fps. A tiny invisible compositor animation keeps frames ticking at full speed
+   (no effect on uncapped FPS). */
+@keyframes kvc-frame-tick { from { opacity: 0.99; } to { opacity: 1; } }
+html::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  animation: kvc-frame-tick 1s linear infinite alternate;
+}
