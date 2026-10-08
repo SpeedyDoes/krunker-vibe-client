@@ -2,11 +2,18 @@
 
 Minimal Krunker.io desktop client built on Electron. Not affiliated with Krunker or FRVR.
 
-## Requirements
+## Download
 
-Node.js 22.12+.
+Windows: download `Krunker.Vibe.Client.Setup.1.0.0.exe` from the
+[latest release](https://github.com/SpeedyDoes/krunker-vibe-client/releases/latest) and run it.
+No Node.js needed.
 
-## Usage
+The installer is not code-signed, so Windows SmartScreen may warn about it:
+click **More info**, then **Run anyway**.
+
+## Build from source
+
+Requires Node.js 22.12+.
 
 ```
 npm install
