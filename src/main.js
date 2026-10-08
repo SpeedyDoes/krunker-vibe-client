@@ -1,16 +1,22 @@
+const fs = require('fs');
 const path = require('path');
 const { app, BrowserWindow, Menu, dialog, session, shell } = require('electron');
 
 const GAME_URL = 'https://krunker.io/';
 const ICON = path.join(__dirname, 'assets', 'icon.png');
 
+// Discord application id for Rich Presence; presence is skipped entirely while empty.
+const DISCORD_CLIENT_ID = '';
+const PRESENCE_INTERVAL_MS = 15000;
+const PRESENCE_IMAGE = 'https://raw.githubusercontent.com/SpeedyDoes/krunker-vibe-client/main/src/assets/icon.png';
+
 // Ad network hosts behind Krunker's AdSense banners, interstitials and rewarded videos.
 const AD_HOSTS = ['doubleclick.net', 'googlesyndication.com', 'googleadservices.com',
   'googletagservices.com', 'adservice.google.com', 'fundingchoicesmessages.google.com',
   'imasdk.googleapis.com', 'amazon-adsystem.com'];
 
-// Krunker's own dark boxes around the (now empty) menu and end-of-match ad slots.
-const HIDE_AD_BOXES = '#aContainer, #endAContainer { visibility: hidden !important; }';
+// Menu declutter and the hidden ad boxes (Krunker's dark frames around the now empty ad slots).
+const KRUNKER_CSS = fs.readFileSync(path.join(__dirname, 'krunker.css'), 'utf8');
 
 // Chromium's default pointer lock re-centres the OS cursor; fast mouse movement outruns it
 // and produces random camera flicks. Raw input (unadjustedMovement) reads the mouse directly.
@@ -22,6 +28,29 @@ const RAW_INPUT = `(() => {
       return requestPointerLock.call(this, options);
     });
   };
+})();`;
+
+// Page-side read of the current match. Never includes the player's name.
+const READ_ACTIVITY = `(() => {
+  try {
+    const game = window.getGameActivity();
+    if (!game) return null;
+    const hud = document.getElementById('inGameUI');
+    const kills = document.getElementById('killsVal');
+    const icon = document.getElementById('menuClassIcn');
+    return {
+      id: game.id,
+      time: game.time,
+      class: { name: game.class && game.class.name },
+      map: game.map,
+      mode: game.mode,
+      kills: kills ? Number(kills.textContent) || 0 : 0,
+      playing: !!hud && getComputedStyle(hud).display !== 'none',
+      classIcon: icon && icon.src ? icon.src.split('?')[0] : null
+    };
+  } catch (error) {
+    return null;
+  }
 })();`;
 
 // Krunker treats any user agent containing "Electron" as its discontinued official client and
@@ -36,6 +65,50 @@ app.commandLine.appendSwitch('disable-gpu-vsync');
 Menu.setApplicationMenu(null);
 
 let mainWindow = null;
+
+const presence = DISCORD_CLIENT_ID && require('./discord')(DISCORD_CLIENT_ID);
+let matchId = null;
+let matchStart = 0;
+let sentKey = null;
+let sentEnd = 0;
+
+function publishPresence(info) {
+  if (!info || !info.map || !info.mode) {
+    if (sentKey !== null) presence.setActivity(null);
+    sentKey = null;
+    return;
+  }
+  if (info.id !== matchId) {
+    matchId = info.id;
+    matchStart = Date.now();
+  }
+  const kills = info.kills === 1 ? '1 kill' : `${info.kills} kills`;
+  const activity = {
+    // Discord rejects text over 128 characters (long custom map names).
+    details: `${info.mode} on ${info.map}`.slice(0, 128),
+    state: info.playing ? kills : 'In menu',
+    timestamps: info.time > 0 ? { end: Math.round(Date.now() + info.time * 1000) } : { start: matchStart },
+    assets: { large_image: PRESENCE_IMAGE, large_text: 'Krunker Vibe Client' }
+  };
+  if (info.classIcon && info.class.name) {
+    activity.assets.small_image = info.classIcon;
+    activity.assets.small_text = info.class.name.slice(0, 128);
+  }
+  // The end time is recomputed on every poll; only a real drift counts as a change (rate limit).
+  const key = JSON.stringify([info.id, activity.details, activity.state, activity.assets]);
+  const end = activity.timestamps.end || 0;
+  if (key === sentKey && Math.abs(end - sentEnd) <= 5000) return;
+  sentKey = key;
+  sentEnd = end;
+  presence.setActivity(activity);
+}
+
+function updatePresence() {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  const contents = mainWindow.webContents;
+  if (!isKrunker(contents.getURL())) return publishPresence(null);
+  contents.executeJavaScript(READ_ACTIVITY).then(publishPresence).catch(() => {});
+}
 
 function isKrunker(url) {
   try {
@@ -86,7 +159,7 @@ function setupWindow(win) {
   contents.on('dom-ready', () => {
     if (!isKrunker(contents.getURL())) return;
     contents.executeJavaScript(RAW_INPUT).catch(() => {});
-    contents.insertCSS(HIDE_AD_BOXES).catch(() => {});
+    contents.insertCSS(KRUNKER_CSS).catch(() => {});
   });
 
   // Electron silently cancels close/reload when beforeunload objects; let the user decide.
@@ -150,4 +223,6 @@ app.whenReady().then(() => {
   });
 
   mainWindow.loadURL(GAME_URL);
+
+  if (presence) setInterval(updatePresence, PRESENCE_INTERVAL_MS).unref();
 });
