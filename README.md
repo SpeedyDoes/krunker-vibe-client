@@ -21,7 +21,7 @@ npm start
 npm run dist
 ```
 
-`npm run dist` builds a Windows installer into `dist/`.
+`npm run dist` builds a Windows installer into `dist/`. See `docs/DEVELOPMENT.md` for testing and releases, and `CHANGELOG.md` for changes.
 
 ## Keybinds
 
