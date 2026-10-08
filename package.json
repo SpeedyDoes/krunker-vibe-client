@@ -1,7 +1,7 @@
 {
   "name": "krunker-vibe-client",
   "productName": "Krunker Vibe Client",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Minimal Krunker.io desktop client",
   "private": true,
   "main": "src/main.js",
