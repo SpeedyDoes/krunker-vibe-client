@@ -1,10 +1,10 @@
 # Project status
 
-Last updated: 2026-10-08 — current release **v1.3.1**, published on GitHub (Electron 44.7.0).
+Last updated: 2026-10-12 — current version **v1.3.2** (installer built, not yet published as a GitHub release; Electron 44.7.0).
 Releases: v1.0.0, v1.1.0, v1.2.0, v1.3.0, v1.3.1 — https://github.com/SpeedyDoes/krunker-vibe-client/releases
 
 ## Start here (next session)
-- Working tree is clean and pushed; `main` = v1.3.1. Build with `npm install` + `npm run dist`.
+- Working tree is clean and pushed; `main` = v1.3.2 (Invite/Join click fix; GitHub release not published yet). Build with `npm install` + `npm run dist`.
 - Open items waiting on the owner:
   1. Optional: the 3D class preview sits ~57 px lower since Class + Customize left its container — owner
      hasn't said whether to pin it back.

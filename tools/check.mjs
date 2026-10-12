@@ -40,11 +40,16 @@ line(grid === 'grid', '#subLogoButtons display grid', grid);
 // Menu layout: Class + Customize on the left middle, stat line at the bottom edge ('n/a' = not on screen).
 const layout = await c.evaluate(`(() => {
   const r = (sel) => { const e = document.querySelector(sel); const b = e && e.getBoundingClientRect(); return b && b.width ? b : null; };
-  const footer = r('#menuClassFooter'), menu = r('#menuItemContainer'), info = r('#matchInfoHolder'), btn = r('#customizeButton');
-  const out = {};
+  const footer = r('#menuClassFooter'), menu = r('#menuItemContainer'), info = r('#matchInfoHolder');
+  const out = { hits: {} };
   if (footer && menu) out.footer = { dx: footer.left - menu.left, dy: (footer.top + footer.bottom) / 2 - innerHeight / 2 };
   if (info) out.info = innerHeight - info.bottom;
-  if (btn) { const hit = document.elementFromPoint((btn.left + btn.right) / 2, (btn.top + btn.bottom) / 2); out.hit = !!hit && !!hit.closest('#customizeButton'); out.consent = !!hit && !!hit.closest('#onetrust-consent-sdk'); }
+  for (const sel of ['#customizeButton', '#inviteButton']) {
+    const btn = r(sel);
+    if (!btn) continue;
+    const hit = document.elementFromPoint((btn.left + btn.right) / 2, (btn.top + btn.bottom) / 2);
+    out.hits[sel] = { ok: !!hit && !!hit.closest(sel), consent: !!hit && !!hit.closest('#onetrust-consent-sdk'), by: hit ? hit.tagName.toLowerCase() + (hit.id ? '#' + hit.id : '') : 'nothing' };
+  }
   return out;
 })()`);
 if (typeof layout === 'string') line(false, 'menu layout', layout);
@@ -54,8 +59,11 @@ else {
   if (layout.info !== undefined) line(layout.info >= 0 && layout.info <= 24, 'stat line at bottom edge', `${layout.info.toFixed(1)}px above bottom`);
   else line(true, 'stat line at bottom edge', 'n/a');
   // A fresh profile's consent dialog dims the whole page, so it covering the button says nothing.
-  if (layout.hit !== undefined) line(layout.hit || layout.consent, '#customizeButton clickable (not covered)', layout.consent ? 'consent overlay' : '');
-  else line(true, '#customizeButton clickable (not covered)', 'n/a');
+  for (const sel of ['#customizeButton', '#inviteButton']) {
+    const h = layout.hits[sel];
+    if (h) line(h.ok || h.consent, `${sel} clickable (not covered)`, h.consent ? 'consent overlay' : h.ok ? '' : `covered by ${h.by}`);
+    else line(true, `${sel} clickable (not covered)`, 'n/a');
+  }
 }
 
 // Frame-tick animation that keeps Krunker's Frame Cap from collapsing to ~60 fps.

@@ -2,6 +2,8 @@
 
 /* Krunker's dark boxes around the (now empty) menu and end-of-match ad slots. */
 #aContainer, #endAContainer { visibility: hidden !important; }
+/* The empty slot's wrapper still spans the bottom edge and would swallow clicks on the stat line (Invite/Join). */
+#aMerger { pointer-events: none !important; }
 
 /* Store bundle promo card and Twitch "Live Streams" panel. */
 #tlInfHold { display: none !important; }

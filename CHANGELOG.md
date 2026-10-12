@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2 — 2026-10-12
+- Fix: the Invite and Join buttons on the bottom stat line are clickable again (an invisible ad box
+  covered them).
+
 ## 1.3.1 — 2026-10-08
 - Customize button sits below the class box.
 

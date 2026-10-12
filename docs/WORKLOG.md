@@ -134,3 +134,13 @@ Append a new dated section after each session (newest at the bottom).
   sheet loads after ours.
 - `tools/check.mjs`: signed-in header items in the hidden list; layout checks (footer position, stat line,
   Customize not covered).
+
+## 2026-10-12 — Session 4
+
+### 1. Invite button not working (owner report)
+- Cause: the stat line now sits at the bottom edge, under Krunker's ad slot wrapper `#aMerger`. We hide
+  `#aContainer` with `visibility`, but its wrapper still spans the area and caught the clicks
+  (`elementFromPoint` on Invite returned `#aMerger`). Fix: `#aMerger { pointer-events: none }`.
+- `tools/check.mjs`: the "not covered" check now covers `#inviteButton` too and names the covering element.
+- Not clicked in tests (it would overwrite the owner's clipboard); owner to confirm the copy in the app.
+- Bumped to **v1.3.2**, built the installer, committed and pushed (no GitHub release published).
