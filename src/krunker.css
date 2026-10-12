@@ -118,24 +118,26 @@
   background: linear-gradient(90deg, rgba(255, 61, 127, 0.46) 0%, rgba(255, 176, 46, 0.26) 45%, rgba(0, 0, 0, 0.7) 90%);
 }
 
-/* Loading screen: mark and name below Krunker's spinner, only until its loading backdrop is dismissed (the backdrop itself fades out after). */
-body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::before,
-body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::after {
+/* Loading screen: animated logo in the middle instead of Krunker's spinner, only until its loading backdrop is
+   dismissed (the backdrop itself fades out after). Off while Krunker shows an error box (.onError) in the same spot. */
+body:has(> #loadingBg:not([style*='none'])):has(#instructionHolder:not(.onError)) #instructions { visibility: hidden; }
+body:has(> #loadingBg:not([style*='none'])):has(#instructionHolder:not(.onError)) #instructionsFadeBG::before,
+body:has(> #loadingBg:not([style*='none'])):has(#instructionHolder:not(.onError)) #instructionsFadeBG::after {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   pointer-events: none;
 }
-body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::before {
+body:has(> #loadingBg:not([style*='none'])):has(#instructionHolder:not(.onError)) #instructionsFadeBG::before {
   content: "";
-  top: calc(50% + 10px);
-  width: 72px;
-  height: 72px;
-  background: var(--kvc-logo) no-repeat center / contain;
+  top: 50%;
+  width: 112px;
+  height: 112px;
+  background: var(--kvc-loader) no-repeat center / contain;
 }
-body:has(> #loadingBg:not([style*='none'])) #instructionsFadeBG::after {
+body:has(> #loadingBg:not([style*='none'])):has(#instructionHolder:not(.onError)) #instructionsFadeBG::after {
   content: "VIBE CLIENT";
-  top: calc(50% + 94px);
+  top: calc(50% + 96px);
   font-size: 22px;
   letter-spacing: 5px;
   white-space: nowrap;

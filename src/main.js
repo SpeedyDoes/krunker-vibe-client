@@ -1,4 +1,5 @@
 const fs = require('fs');
+const http = require('http');
 const path = require('path');
 const { app, BrowserWindow, Menu, dialog, session, shell } = require('electron');
 
@@ -10,15 +11,26 @@ const DISCORD_CLIENT_ID = '';
 const PRESENCE_INTERVAL_MS = 15000;
 const PRESENCE_IMAGE = 'https://raw.githubusercontent.com/SpeedyDoes/krunker-vibe-client/main/src/assets/icon.png';
 
+// Local endpoint for stream tools (StreamChatOverlay's !link chat command): GET /link -> { "link": ... }.
+const LINK_PORT = 47615;
+const LINK_HOSTS = [`127.0.0.1:${LINK_PORT}`, `localhost:${LINK_PORT}`];
+const READ_GAME_ID = `(() => {
+  try {
+    return window.getGameActivity().id || null;
+  } catch (error) {
+    return null;
+  }
+})();`;
+
 // Ad network hosts behind Krunker's AdSense banners, interstitials and rewarded videos.
 const AD_HOSTS = ['doubleclick.net', 'googlesyndication.com', 'googleadservices.com',
   'googletagservices.com', 'adservice.google.com', 'fundingchoicesmessages.google.com',
   'imasdk.googleapis.com', 'amazon-adsystem.com'];
 
 // Menu declutter, hidden ad boxes and client branding. The page can't load local files, so the
-// logo mark, menu banner and version reach the stylesheet as CSS variables.
+// loading animation, menu banner and version reach the stylesheet as CSS variables.
 const svgUri = (name) => `data:image/svg+xml;base64,${fs.readFileSync(path.join(__dirname, 'assets', name)).toString('base64')}`;
-const KRUNKER_CSS = `:root { --kvc-logo: url("${svgUri('mark.svg')}"); --kvc-banner: url("${svgUri('banner.svg')}"); --kvc-version: "v${app.getVersion()}"; }\n`
+const KRUNKER_CSS = `:root { --kvc-loader: url("${svgUri('loader.svg')}"); --kvc-banner: url("${svgUri('banner.svg')}"); --kvc-version: "v${app.getVersion()}"; }\n`
   + fs.readFileSync(path.join(__dirname, 'krunker.css'), 'utf8');
 
 // Chromium's default pointer lock re-centres the OS cursor; fast mouse movement outruns it
@@ -69,6 +81,14 @@ app.commandLine.appendSwitch('disable-gpu-vsync');
 Menu.setApplicationMenu(null);
 
 let mainWindow = null;
+let splash = null;
+
+// Also called on a failed load so an offline start never leaves the user stuck on the splash.
+function showMain() {
+  if (mainWindow.isVisible()) return;
+  mainWindow.show();
+  if (!splash.isDestroyed()) splash.destroy();
+}
 
 const presence = DISCORD_CLIENT_ID && require('./discord')(DISCORD_CLIENT_ID);
 let matchId = null;
@@ -112,6 +132,30 @@ function updatePresence() {
   const contents = mainWindow.webContents;
   if (!isKrunker(contents.getURL())) return publishPresence(null);
   contents.executeJavaScript(READ_ACTIVITY).then(publishPresence).catch(() => {});
+}
+
+function currentGameLink() {
+  if (!mainWindow || mainWindow.isDestroyed()) return Promise.resolve(null);
+  const contents = mainWindow.webContents;
+  if (!isKrunker(contents.getURL())) return Promise.resolve(null);
+  return contents.executeJavaScript(READ_GAME_ID)
+    .then((id) => (/^[\w-]+:[\w-]+$/.test(id) ? `https://krunker.io/?game=${id}` : null))
+    .catch(() => null);
+}
+
+function startLinkServer() {
+  const server = http.createServer((req, res) => {
+    // Only direct local calls: a web page reaching this port through DNS rebinding sends another Host.
+    if (!LINK_HOSTS.includes(req.headers.host)) return res.writeHead(403).end();
+    if (req.method !== 'GET' || req.url !== '/link') return res.writeHead(404).end();
+    currentGameLink().then((link) => {
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+      res.end(JSON.stringify({ link }));
+    });
+  });
+  // Port taken (e.g. a second client running): the client works as before, just without the endpoint.
+  server.on('error', (error) => console.error(`link server: ${error.message}`));
+  server.listen(LINK_PORT, '127.0.0.1');
 }
 
 function isKrunker(url) {
@@ -161,9 +205,11 @@ function setupWindow(win) {
   });
 
   contents.on('dom-ready', () => {
-    if (!isKrunker(contents.getURL())) return;
+    // The main window stays hidden until the CSS is in, so Krunker's own loading screen never flashes.
+    const reveal = () => { if (win === mainWindow) showMain(); };
+    if (!isKrunker(contents.getURL())) return reveal();
     contents.executeJavaScript(RAW_INPUT).catch(() => {});
-    contents.insertCSS(KRUNKER_CSS).catch(() => {});
+    contents.insertCSS(KRUNKER_CSS).catch(() => {}).then(reveal);
   });
 
   // Electron silently cancels close/reload when beforeunload objects; let the user decide.
@@ -189,7 +235,7 @@ app.whenReady().then(() => {
     (_details, callback) => callback({ cancel: true })
   );
 
-  const splash = new BrowserWindow({
+  splash = new BrowserWindow({
     width: 480,
     height: 270,
     frame: false,
@@ -214,13 +260,6 @@ app.whenReady().then(() => {
   // Keep the client's name in the taskbar instead of Krunker's page title.
   mainWindow.on('page-title-updated', (event) => event.preventDefault());
 
-  // Also called on a failed load so an offline start never leaves the user stuck on the splash.
-  const showMain = () => {
-    if (mainWindow.isVisible()) return;
-    mainWindow.show();
-    if (!splash.isDestroyed()) splash.destroy();
-  };
-  mainWindow.once('ready-to-show', showMain);
   // Main frame only: blocked ad iframes also fail and would drop the splash too early.
   mainWindow.webContents.on('did-fail-load', (_event, _code, _description, _url, isMainFrame) => {
     if (isMainFrame) showMain();
@@ -230,6 +269,7 @@ app.whenReady().then(() => {
   });
 
   mainWindow.loadURL(GAME_URL);
+  startLinkServer();
 
   if (presence) setInterval(updatePresence, PRESENCE_INTERVAL_MS).unref();
 });

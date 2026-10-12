@@ -53,7 +53,7 @@ owner's screenshot.
 | What's New | `#updateAd` (inline `display` toggled by Krunker), `#updateAdVersion` |
 | Generic items | `.menuItem` > `.menuItemTitle#menuBtnX` (direct child): `menuBtnTurfWars`, `menuBtnMarket`, `menuBtnSkinManager`, `menuBtnLeaderboards`, … — hide with `.menuItem:has(> #menuBtnX)` |
 | Header | `#signedInHeaderBar` children in order: `.ph-item` avatar/name/level (`.ph-avatar`, `.ph-name`, `.ph-level-badge`, `.ph-xp-bar`) · `.verticalSeparator` · `.ph-item` KR (`.ph-currency-icon` + `#menuKRCount`) · sep · `.ph-item` Junk (material icon `plumbing` = the pink "wrench", `#menuJNKCount`) · sep · `.ph-item` ranked points (icon `emoji_events` = trophy, `#menuRPCount`) · sep · `.ph-item` Wallet (icon `backpack` + `span.ph-label`, the only item with a direct `.ph-label`). Right side adds Inbox (`.nav-item` with `#mailCount`) |
-| Loading screen | `#loadingBg` (empty, under overlays; gets inline `display:none` ≈ 6.5 s), spinner; `#instructionsFadeBG` is the visible backdrop that fades out |
+| Loading screen | `#loadingBg` (empty, under overlays; gets inline `display:none` ≈ 6.5 s); spinner is `#instructions` > `div[style*=scale(1.4)] > .lds-ring` + `#loadGamNm` (empty while loading); `#instructionsFadeBG` is the visible backdrop that fades out. Load errors (e.g. "Connection Limited" after many quick launches) add `.onError` to `#instructionHolder` and show `#instructionsUpdate` in the centre. Since v1.4.0 `#instructions` is hidden and our animated logo sits at the centre while loading without an error |
 - The owner (signed in) keeps Market & Trading; Battle Pass, Daily Spin, What's New, Turf Wars and
   Leaderboards are hidden since v1.2.0. Junk, ranked points, Wallet and the separators after KR are hidden
   since session 3 (verified on an injected replica of the header template).
@@ -67,6 +67,18 @@ owner's screenshot.
 - Class icons: `https://assets.krunker.io/textures/classes/icon_<index>.png` exist for 0–15 but are
   **8x8 px** (useless for Discord). `#menuClassIcn.src` is the class's **256x256 weapon art**
   (`https://assets.krunker.io/textures/previews/weapons/weapon_<n>.png?build=…`; strip the query).
+
+## Crosshair, ADS reticles and scopes
+- Everything aim-related is drawn by the game on its 2D HUD canvas (the scope image `aimRecticle` with
+  black border bars, plus the crosshair), so page CSS can't hide or replace it; an overlay of ours would
+  only add a second crosshair on top.
+- Built-in settings (Settings → **Advanced** switch `#typeBtn` → Game tab → Crosshair): Type
+  (`crosshairSho`: 0 Off, 1 Dynamic, 2 Shapes, 3 Layered, 4 Image, 5 Precision) and **Always Show**
+  (`crosshairAlways`, "Display crosshair while aiming down sight") — its row is hidden while Type is
+  Dynamic. Throwing weapons have their own set (`crosshair*M`).
+- The game script also has "Scope opacity while aiming down sight" and "Scope border opacity" settings
+  (scope cosmetics: `scope_selection`, `savedScope`), not in the Settings window of a signed-out profile.
+  Not verified in a match (tests never join matches).
 
 ## Ads
 - Ads are Google **AdSense via the FRVR SDK** (`window.FRVR.config.ads.providers`: `adsbygoogle` banners

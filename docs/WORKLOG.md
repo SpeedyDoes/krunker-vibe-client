@@ -144,3 +144,37 @@ Append a new dated section after each session (newest at the bottom).
 - `tools/check.mjs`: the "not covered" check now covers `#inviteButton` too and names the covering element.
 - Not clicked in tests (it would overwrite the owner's clipboard); owner to confirm the copy in the app.
 - Bumped to **v1.3.2**, built the installer, committed and pushed (no GitHub release published).
+
+### 2. Static crosshair while aiming (owner request) — no client feature
+- Krunker draws the crosshair, the scope image (`aimRecticle`) and its border bars on its HUD canvas, so CSS
+  can't remove the red dot / scope, and an overlay would only duplicate Krunker's own crosshair.
+- Krunker already has the option: Settings → Advanced → Game → Crosshair → Type (anything but Dynamic) →
+  **Always Show** ("Display crosshair while aiming down sight"). Scope opacity settings exist in the game
+  script but weren't found in a signed-out profile's Settings. Facts recorded in KRUNKER-NOTES. Not
+  verified in a match.
+
+### 3. Loading screen logo (owner request)
+- New `src/assets/loader.svg` (the mark with SMIL animation: ring spins, centre dot pulses) replaces
+  `mark.svg`, passed as `--kvc-loader`. CSS hides Krunker's spinner (`#instructions`) and centres the
+  logo + "VIBE CLIENT" while `#loadingBg` is visible; off when `#instructionHolder.onError` shows an error
+  box. Checked with screenshots (centred at 960x540, frames differ).
+- Many quick test launches made Krunker answer "Connection Limited" for a while — space launches out.
+- Owner saw Krunker's own spinner for < 1 s at startup: `ready-to-show` showed the main window at Krunker's
+  first paint, ~0.7 s before `dom-ready` inserts our CSS. The main window is now revealed after
+  `insertCSS` resolves. Measured with a throwaway launch: splash visible at 1.1 s, main window at 3.0 s;
+  our CSS applied ~30 ms after `dom-ready`. (With `paintWhenInitiallyHidden`, `document.visibilityState`
+  reads `visible` even while the window is hidden, so it can't be used to test this.)
+
+### 4. `!link` for StreamChatOverlay (owner request)
+- Client side only (the sibling project isn't touched from here): `startLinkServer()` in `main.js`, a
+  loopback HTTP endpoint `GET http://127.0.0.1:47615/link` → `{"link": "https://krunker.io/?game=<id>"}`
+  read on demand via `getGameActivity().id`. Host-header check (403) against DNS rebinding, no CORS.
+  Pull design: the overlay owns Twitch auth/chat and asks the client when `!link` is typed.
+- Tested in a throwaway instance: 200 with the page's id for `127.0.0.1` and `localhost` Hosts, 404 for
+  other paths, 403 for a foreign Host; port released on exit.
+- Overlay side handed to the owner as a prompt for their StreamChatOverlay agent.
+- Owner confirmed `!link` works end to end with StreamChatOverlay.
+
+### 5. Release
+- Released **v1.4.0** (loading animation, no startup flash, `!link` endpoint; includes the v1.3.2 Invite/Join
+  fix, which never got its own GitHub release).

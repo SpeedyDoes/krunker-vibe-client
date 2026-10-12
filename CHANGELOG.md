@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 — 2026-10-12
+- Stream tools: local endpoint `http://127.0.0.1:47615/link` with the current game link, used by
+  StreamChatOverlay to answer `!link` in Twitch chat.
+- Loading screen: an animated Vibe Client logo in the middle of the screen replaces Krunker's spinner, and
+  the window opens straight on it (no flash of Krunker's own loading screen).
+
 ## 1.3.2 — 2026-10-12
 - Fix: the Invite and Join buttons on the bottom stat line are clickable again (an invisible ad box
   covered them).
